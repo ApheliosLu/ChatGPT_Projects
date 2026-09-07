@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>习惯打卡</title>
+<style>
+  :root {
+    --bg: #edf2e8;
+    --card: #ffffff;
+    --text: #1f2329;
+    --text-muted: #8a9099;
+    --border: #e5e6eb;
+    --done: #9aa0a6;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    padding: 48px 16px;
+  }
+  .app {
+    width: 100%;
+    max-width: 440px;
+    background: linear-gradient(145deg, #f4f8ff 0%, #dbeafe 48%, #b9d7ff 100%);
+    border-radius: 16px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+    padding: 28px 24px 24px;
+  }
+  .date { font-size: 13px; color: var(--text-muted); }
+  .summary { margin: 14px 0 20px; }
+  .summary .count { font-size: 40px; font-weight: 700; letter-spacing: -1px; line-height: 1; }
+  .summary .count .total { color: var(--text-muted); font-size: 24px; font-weight: 400; letter-spacing: 0; }
+  .summary .hint { font-size: 13px; color: var(--text-muted); margin-top: 6px; }
+  .add-form { display: flex; gap: 8px; margin-bottom: 6px; }
+  .add-form input {
+    flex: 1;
+    min-width: 0;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-size: 14px;
+    font-family: inherit;
+    outline: none;
+    color: var(--text);
+  }
+  .add-form input:focus { border-color: #b9c6f0; box-shadow: 0 0 0 3px rgba(47, 111, 237, 0.08); }
+  .add-form button {
+    flex: none;
+    border: none;
+    background: #1f2329;
+    color: #fff;
+    border-radius: 10px;
+    padding: 0 18px;
+    font-size: 14px;
+    font-family: inherit;
+    cursor: pointer;
+  }
+  .add-form button:hover { background: #33373d; }
+  .add-form button:active { transform: scale(0.97); }
+  .habit-list { list-style: none; }
+  .habit {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 13px 4px;
+    border-top: 1px solid var(--border);
+  }
+  .habit:first-child { border-top: none; }
+  .check {
+    flex: none;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 2px solid #c9cdd4;
+    background: transparent;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    transition: background 0.15s, border-color 0.15s;
+  }
+  .check:hover { border-color: var(--text-muted); }
+  .habit.done .check { background: var(--done); border-color: var(--done); }
+  .check svg { display: none; }
+  .habit.done .check svg { display: block; }
+  .name { flex: 1; font-size: 15px; overflow-wrap: anywhere; }
+  .habit.done .name { color: var(--text-muted); text-decoration: line-through; }
+  .delete {
+    flex: none;
+    border: none;
+    background: transparent;
+    color: #c0c4cc;
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 6px;
+    opacity: 0;
+    transition: opacity 0.15s, color 0.15s, background 0.15s;
+  }
+  .habit:hover .delete, .delete:focus-visible { opacity: 1; }
+  .delete:hover { color: #e5484d; background: #fdeeee; }
+  .empty {
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 14px;
+    padding: 28px 0 12px;
+  }
+  @media (hover: none) {
+    .delete { opacity: 1; }
+  }
+  @media (max-width: 480px) {
+    body { padding: 24px 12px; }
+  }
+</style>
+</head>
+<body>
+  <main class="app">
+    <div class="date" id="date"></div>
+    <div class="summary">
+      <div class="count"><span id="doneCount">0</span><span class="total"> / <span id="totalCount">0</span> 项</span></div>
+      <div class="hint">今天已完成</div>
+    </div>
+    <form class="add-form" id="addForm">
+      <input id="habitInput" type="text" placeholder="添加一个习惯，如：喝水" maxlength="20" autocomplete="off">
+      <button type="submit">添加</button>
+    </form>
+    <ul class="habit-list" id="habitList"></ul>
+    <p class="empty" id="emptyHint" hidden>还没有习惯，先添加一个吧 ✨</p>
+  </main>
+<script>
+(function () {
+  'use strict';
+  var HABITS_KEY = 'habit-tracker.habits';
+  var CHECKINS_KEY = 'habit-tracker.checkins';
+
+  function pad(n) { return n < 10 ? '0' + n : '' + n; }
+  function today() {
+    var d = new Date();
+    return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+  }
+  function formatDate() {
+    var d = new Date();
+    var weeks = ['日', '一', '二', '三', '四', '五', '六'];
+    return (d.getMonth() + 1) + '月' + d.getDate() + '日 · 周' + weeks[d.getDay()];
+  }
+
+  function readJSON(key) {
+    try {
+      var raw = localStorage.getItem(key);
+      if (raw === null) return null;
+      return JSON.parse(raw);
+    } catch (e) { return null; }
+  }
+  function writeJSON(key, value) {
+    try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) { /* storage unavailable: keep in-memory state only */ }
+  }
+
+  function loadHabits() {
+    var data = readJSON(HABITS_KEY);
+    return Array.isArray(data) ? data.filter(function (h) { return h && typeof h.name === 'string'; }) : [];
+  }
+  function loadCheckins() {
+    var data = readJSON(CHECKINS_KEY);
+    return data && typeof data === 'object' && !Array.isArray(data) ? data : {};
+  }
+
+  var habits = loadHabits();
+  var checkins = loadCheckins();
+  var todayStr = today();
+
+  function saveHabits() { writeJSON(HABITS_KEY, habits); }
+  function saveCheckins() { writeJSON(CHECKINS_KEY, checkins); }
+
+  function todayDoneIds() {
+    var list = checkins[todayStr];
+    return Array.isArray(list) ? list : [];
+  }
+  function isDone(id) { return todayDoneIds().indexOf(id) !== -1; }
+
+  function makeId() {
+    if (window.crypto && typeof window.crypto.randomUUID === 'function') return window.crypto.randomUUID();
+    return 'h' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10);
+  }
+
+  var dateEl = document.getElementById('date');
+  var doneCountEl = document.getElementById('doneCount');
+  var totalCountEl = document.getElementById('totalCount');
+  var listEl = document.getElementById('habitList');
+  var emptyHint = document.getElementById('emptyHint');
+
+  function render() {
+    var doneIds = todayDoneIds();
+    var validIds = {};
+    var doneCount = 0;
+    habits.forEach(function (h) { validIds[h.id] = true; });
+
+    listEl.innerHTML = '';
+    habits.forEach(function (h) {
+      var done = doneIds.indexOf(h.id) !== -1 && validIds[h.id];
+      if (done) doneCount++;
+      var li = document.createElement('li');
+      li.className = 'habit' + (done ? ' done' : '');
+
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'check';
+      btn.setAttribute('aria-label', (done ? '取消完成：' : '完成：') + h.name);
+      btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>';
+      btn.addEventListener('click', function () { toggle(h.id); });
+
+      var name = document.createElement('span');
+      name.className = 'name';
+      name.textContent = h.name;
+
+      var del = document.createElement('button');
+      del.type = 'button';
+      del.className = 'delete';
+      del.setAttribute('aria-label', '删除习惯：' + h.name);
+      del.textContent = '×';
+      del.addEventListener('click', function () { removeHabit(h.id); });
+
+      li.appendChild(btn);
+      li.appendChild(name);
+      li.appendChild(del);
+      listEl.appendChild(li);
+    });
+
+    doneCountEl.textContent = String(doneCount);
+    totalCountEl.textContent = String(habits.length);
+    emptyHint.hidden = habits.length !== 0;
+    dateEl.textContent = formatDate();
+  }
+
+  function addHabit() {
+    var input = document.getElementById('habitInput');
+    var name = input.value.trim();
+    if (!name) return;
+    habits.push({ id: makeId(), name: name, createdAt: new Date().toISOString() });
+    saveHabits();
+    input.value = '';
+    render();
+    input.focus();
+  }
+
+  function toggle(id) {
+    var done = isDone(id);
+    var list = todayDoneIds().slice();
+    if (done) {
+      list = list.filter(function (x) { return x !== id; });
+    } else {
+      list.push(id);
+    }
+    checkins[todayStr] = list;
+    saveCheckins();
+    render();
+  }
+
+  function nameOf(id) {
+    var found = habits.filter(function (h) { return h.id === id; })[0];
+    return found ? found.name : '该习惯';
+  }
+
+  function removeHabit(id) {
+    if (!window.confirm('确定删除「' + nameOf(id) + '」吗？删除后需重新添加。')) return;
+    habits = habits.filter(function (h) { return h.id !== id; });
+    Object.keys(checkins).forEach(function (dateKey) {
+      if (Array.isArray(checkins[dateKey])) {
+        checkins[dateKey] = checkins[dateKey].filter(function (x) { return x !== id; });
+      }
+    });
+    saveHabits();
+    saveCheckins();
+    render();
+  }
+
+  document.getElementById('addForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    addHabit();
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>

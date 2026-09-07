@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5bd56">
+  <title>鹈鹕的海岸骑行</title>
+  <style>
+    :root {
+      --ink: #26364a;
+      --cream: #fff8e7;
+      --sun: #f7c85c;
+      --coral: #e96c4d;
+      --ocean: #52aebe;
+      --deep-ocean: #287c98;
+      --foam: #d9f1e8;
+      --yellow: #f7d47a;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      min-width: 320px;
+      min-height: 100vh;
+      margin: 0;
+      overflow-x: hidden;
+      color: var(--ink);
+      background: var(--sun);
+      font-family: Georgia, "Songti SC", "Noto Serif CJK SC", serif;
+    }
+
+    main {
+      display: grid;
+      min-height: 100vh;
+      place-items: center;
+      padding: clamp(1.1rem, 3vw, 2.8rem);
+    }
+
+    .poster {
+      width: min(1080px, 100%);
+      overflow: hidden;
+      border: 4px solid var(--ink);
+      border-radius: 24px;
+      background: var(--cream);
+      box-shadow: 10px 11px 0 rgba(38, 54, 74, .24);
+    }
+
+    .poster-header {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: clamp(1.2rem, 3vw, 2.25rem) clamp(1.25rem, 4vw, 3.5rem) 1.1rem;
+    }
+
+    .eyebrow, .status {
+      margin: 0;
+      font-family: "Trebuchet MS", sans-serif;
+      font-size: .68rem;
+      font-weight: 800;
+      letter-spacing: .17em;
+      text-transform: uppercase;
+    }
+
+    .eyebrow { color: var(--coral); }
+    .status { color: var(--deep-ocean); white-space: nowrap; }
+
+    h1 {
+      max-width: 13ch;
+      margin: .28rem 0 0;
+      font-size: clamp(2.25rem, 7vw, 5.7rem);
+      line-height: .87;
+      letter-spacing: -.075em;
+    }
+
+    .scene-wrap { border-top: 4px solid var(--ink); }
+    svg { display: block; width: 100%; height: auto; }
+
+    .credit {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      margin: 0;
+      padding: .75rem clamp(1.25rem, 4vw, 3.5rem) .9rem;
+      border-top: 4px solid var(--ink);
+      background: var(--cream);
+      font-size: clamp(.75rem, 1.4vw, .98rem);
+      font-style: italic;
+    }
+
+    .credit span:last-child { color: var(--coral); font-style: normal; font-weight: bold; }
+
+    .cloud, .wave, .rider, .wing, .wheel, .pedal-arm, .road-dashes {
+      transform-box: view-box;
+      transform-origin: center;
+    }
+
+    .cloud { animation: cloud-drift 9s ease-in-out infinite alternate; }
+    .cloud--two { animation-delay: -4.2s; animation-duration: 11s; }
+    .wave { animation: wave-sway 2.6s ease-in-out infinite alternate; }
+    .wave--two { animation-delay: -1.2s; }
+    .road-dashes { animation: road-scroll .75s linear infinite; }
+
+    .rider {
+      transform-origin: 505px 280px;
+      animation: rider-bounce .52s cubic-bezier(.34, .02, .55, 1) infinite;
+    }
+
+    .wing {
+      transform-origin: 520px 255px;
+      animation: wing-flap .52s ease-in-out infinite;
+    }
+
+    .wing-tip {
+      transform-origin: 546px 285px;
+      animation: wing-tip .52s ease-in-out infinite;
+    }
+
+    .wheel--rear { transform-origin: 405px 394px; animation: wheel-spin .52s linear infinite; }
+    .wheel--front { transform-origin: 665px 394px; animation: wheel-spin .52s linear infinite; }
+    .pedal-arm { transform-origin: 500px 394px; animation: wheel-spin .52s linear infinite; }
+    .leg--front { transform-origin: 500px 290px; animation: leg-pump .52s ease-in-out infinite; }
+    .leg--back { transform-origin: 490px 292px; animation: leg-pump .52s ease-in-out infinite reverse; }
+
+    @keyframes wheel-spin { to { transform: rotate(360deg); } }
+    @keyframes road-scroll { to { transform: translateX(-68px); } }
+    @keyframes cloud-drift { to { transform: translateX(38px); } }
+    @keyframes wave-sway { to { transform: translateX(-14px) translateY(3px); } }
+    @keyframes rider-bounce {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      48% { transform: translateY(-11px) rotate(-1.5deg); }
+      72% { transform: translateY(2px) rotate(.8deg); }
+    }
+    @keyframes wing-flap {
+      0%, 100% { transform: rotate(7deg) translateY(0); }
+      50% { transform: rotate(-17deg) translateY(-5px); }
+    }
+    @keyframes wing-tip {
+      0%, 100% { transform: rotate(5deg); }
+      50% { transform: rotate(-13deg); }
+    }
+    @keyframes leg-pump {
+      0%, 100% { transform: rotate(12deg); }
+      50% { transform: rotate(-17deg); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; }
+    }
+
+    @media (max-width: 560px) {
+      .poster-header { align-items: start; flex-direction: column; }
+      .credit { align-items: start; flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <article class="poster" aria-label="鹈鹕骑自行车动画海报">
+      <header class="poster-header">
+        <div>
+          <p class="eyebrow">COASTAL PEDAL CLUB · 02</p>
+          <h1>鹈鹕的<br>海岸骑行</h1>
+        </div>
+        <p class="status" aria-live="polite">欢快骑行中</p>
+      </header>
+
+      <div class="scene-wrap">
+        <svg viewBox="0 0 960 540" role="img" aria-labelledby="art-title art-description">
+          <title id="art-title">欢快骑行的鹈鹕</title>
+          <desc id="art-description">一只鹈鹕在阳光明媚的海岸公路上骑着珊瑚橙色自行车，车轮转动、身体弹跳、翅膀轻拍。</desc>
+
+          <g aria-hidden="true" class="scene-background">
+            <rect width="960" height="540" fill="#f7d47a" />
+            <circle cx="764" cy="109" r="67" fill="#fff1a4" />
+            <circle cx="764" cy="109" r="48" fill="#f7c85c" />
+            <g fill="#fff8e7">
+              <path class="cloud" d="M99 120c0-21 16-38 37-38 15 0 29 9 35 22 5-4 12-6 19-6 19 0 34 15 34 34H99c0-4 0-8 0-12Z" />
+              <path class="cloud cloud--two" d="M635 201c0-17 14-31 31-31 12 0 23 6 28 17 5-3 10-4 16-4 15 0 27 12 27 27H635v-9Z" />
+            </g>
+            <path d="M0 264C119 229 194 240 297 266c112 29 177-3 299-20 117-17 224 11 364-15v170H0Z" fill="#52aebe" />
+            <path class="wave" d="M-28 294c60-25 116-28 176-4 58 23 108 17 165-7 62-26 119-21 177 5 60 27 123 20 180-7 55-26 109-27 166-4 47 18 85 19 152-3v43H-28Z" fill="#d9f1e8" />
+            <path class="wave wave--two" d="M-41 342c52-17 101-17 153 2 49 19 108 18 164-4 54-22 105-22 160 1 60 26 119 23 173 1 63-26 118-20 176 4 58 23 106 19 164-3v48H-41Z" fill="#287c98" />
+            <path d="M0 372C145 336 271 362 390 382s253 7 359-17c75-17 145-15 211 4v171H0Z" fill="#f5e2af" />
+            <path d="M0 418C143 390 255 412 399 435s262 11 397-14c64-12 115-13 164-4v123H0Z" fill="#26364a" />
+            <g class="road-dashes" fill="#f7c85c">
+              <rect x="-51" y="471" width="52" height="10" rx="5" /><rect x="17" y="471" width="52" height="10" rx="5" />
+              <rect x="85" y="471" width="52" height="10" rx="5" /><rect x="153" y="471" width="52" height="10" rx="5" />
+              <rect x="221" y="471" width="52" height="10" rx="5" /><rect x="289" y="471" width="52" height="10" rx="5" />
+              <rect x="357" y="471" width="52" height="10" rx="5" /><rect x="425" y="471" width="52" height="10" rx="5" />
+              <rect x="493" y="471" width="52" height="10" rx="5" /><rect x="561" y="471" width="52" height="10" rx="5" />
+              <rect x="629" y="471" width="52" height="10" rx="5" /><rect x="697" y="471" width="52" height="10" rx="5" />
+              <rect x="765" y="471" width="52" height="10" rx="5" /><rect x="833" y="471" width="52" height="10" rx="5" />
+              <rect x="901" y="471" width="52" height="10" rx="5" /><rect x="969" y="471" width="52" height="10" rx="5" />
+            </g>
+          </g>
+
+          <g aria-hidden="true" class="bicycle" fill="none" stroke="#26364a" stroke-linecap="round" stroke-linejoin="round">
+            <g class="wheel wheel--rear" stroke-width="8">
+              <circle cx="405" cy="394" r="79" fill="#fff8e7" /><circle cx="405" cy="394" r="64" />
+              <path d="M405 330v128M341 394h128M360 349l90 90M450 349l-90 90" stroke-width="3" />
+              <circle cx="405" cy="394" r="7" fill="#26364a" stroke="none" />
+            </g>
+            <g class="wheel wheel--front" stroke-width="8">
+              <circle cx="665" cy="394" r="79" fill="#fff8e7" /><circle cx="665" cy="394" r="64" />
+              <path d="M665 330v128M601 394h128M620 349l90 90M710 349l-90 90" stroke-width="3" />
+              <circle cx="665" cy="394" r="7" fill="#26364a" stroke="none" />
+            </g>
+            <g stroke="#e96c4d" stroke-width="13">
+              <path d="M405 394 498 289 575 394H405Z" />
+              <path d="m498 289 127 9 40 96" />
+              <path d="m575 394 50-96" />
+            </g>
+            <path d="m482 287-28-16M451 269h42M625 298 647 273M636 270h38" stroke-width="10" />
+            <path d="M500 393h46" stroke-width="7" />
+            <g class="pedal-arm" stroke-width="7">
+              <path d="M500 394 532 425M500 394 468 363" />
+              <path d="M521 429h23M446 359h23" />
+              <circle cx="500" cy="394" r="13" fill="#f7c85c" />
+            </g>
+          </g>
+
+          <g class="rider">
+            <g class="leg leg--back" fill="none" stroke="#f9f0d8" stroke-width="24" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M494 294 471 340 468 363" />
+            </g>
+            <path d="M453 360h31" fill="none" stroke="#e96c4d" stroke-width="15" stroke-linecap="round" />
+            <g class="leg leg--front" fill="none" stroke="#fff8e7" stroke-width="24" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M523 292 542 357 532 425" />
+            </g>
+            <path d="M517 429h32" fill="none" stroke="#e96c4d" stroke-width="15" stroke-linecap="round" />
+
+            <g class="pelican">
+              <path d="M438 212c-5-75 42-125 108-125 74 0 111 52 103 124-5 50-38 85-96 87-71 3-110-31-115-86Z" fill="#fff8e7" stroke="#26364a" stroke-width="7" stroke-linejoin="round" />
+              <path d="M457 204c-78-8-139 12-145 44-3 19 16 37 48 42 36 7 69-11 105-46Z" fill="#e96c4d" stroke="#26364a" stroke-width="7" stroke-linejoin="round" />
+              <path d="M327 263c34 8 76-4 111-30-13 36-47 61-84 55-25-4-37-14-27-25Z" fill="#f7b066" />
+              <path d="M454 221c-38 0-69 16-86 35 32 14 70 5 101-22Z" fill="#fff0be" />
+              <circle cx="575" cy="157" r="10" fill="#26364a" />
+              <circle cx="578" cy="154" r="3" fill="#fff8e7" />
+              <path d="M605 184q17 10 22 25" fill="none" stroke="#26364a" stroke-width="6" stroke-linecap="round" />
+              <path d="M505 104q31-27 72-10" fill="none" stroke="#26364a" stroke-width="8" stroke-linecap="round" />
+
+              <g class="wing">
+                <path d="M500 225c-29 27-40 72-20 108 20 35 65 39 98 13-25-13-41-38-45-73-4-34-14-51-33-48Z" fill="#f1ead7" stroke="#26364a" stroke-width="7" stroke-linejoin="round" />
+                <g class="wing-tip" fill="none" stroke="#e96c4d" stroke-width="9" stroke-linecap="round">
+                  <path d="M502 278q23 21 50 27" /><path d="M491 299q24 23 49 29" />
+                </g>
+              </g>
+              <path d="M594 247q32 8 50 44" fill="none" stroke="#fff8e7" stroke-width="17" stroke-linecap="round" />
+              <path d="M638 286q14 2 27 15" fill="none" stroke="#e96c4d" stroke-width="14" stroke-linecap="round" />
+            </g>
+          </g>
+
+          <g aria-hidden="true" fill="#26364a">
+            <circle cx="118" cy="425" r="6" /><circle cx="143" cy="441" r="4" /><circle cx="830" cy="398" r="5" />
+          </g>
+        </svg>
+      </div>
+
+      <p class="credit"><span>海风、盐粒与两轮的自由。</span><span>LOOPING ALL DAY</span></p>
+    </article>
+  </main>
+</body>
+</html>
