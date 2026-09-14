@@ -1,38 +1,31 @@
-# AGENTS.md
+# ChatGPT_Projects 项目指南
 
-This file provides guidance to Codex (Codex.ai/code) when working with code in this repository.
+## 项目定位与当前状态
 
-## 项目性质
+本仓库用于学习和实践 Codex 驱动的 VibeCoding。当前仅有初始 Git 提交；尚未初始化应用代码，也没有 `package.json`、`src/`、构建、lint 或测试命令。
 
-学习用 Codex 进行 VibeCoding 的工作目录。
+开始实现前，先说明将采用的结构、依赖和验证方式；不要假设已有可运行的项目或命令。初始化完成后，及时把实际命令和目录结构更新到本文件。
 
-**重要：当前仓库尚未初始化任何代码**——git 仓库于 2026-08-08 创建，尚无提交，没有 package.json、src/ 或其他源文件，因此不存在可构建/可测试的代码，没有构建、lint、测试命令。
+## 计划技术栈
 
-## 规划中的技术栈（尚未落地）
+除非用户另有指定，首次搭建 Web 应用时使用：
 
-- 前端：Next.js 14 + TypeScript + Tailwind CSS
-- 后端：Next.js API Routes
-- 数据库：Prisma + SQLite
-- 部署：Vercel
+- Next.js 14、TypeScript、Tailwind CSS
+- Next.js API Routes
+- Prisma + SQLite
+- Vercel（仅在用户明确要求部署时使用）
 
-开始搭建时（如 `create-next-app`）按上述栈初始化，落地后在文档中补充真实的构建与开发命令。
+## 代码约定（代码落地后适用）
 
-## 编码规范（规划中，代码落地后适用）
+- 使用函数式 React 组件和 Hooks。
+- React 组件文件使用 PascalCase；工具函数使用 camelCase。
+- API 路由统一返回 `{ success: boolean, data?: unknown, error?: string }`。
+- 数据库访问统一经由 Prisma Client。
+- 不提交 `.env` 或 `prisma/dev.db`；任何密钥、生产配置或 CI/CD 配置的改动必须先征得用户同意。
 
-- 函数式组件 + React Hooks
-- 组件文件 PascalCase（如 BookmarkCard.tsx），工具函数 camelCase
-- API 路由统一返回 `{ success: boolean, data?: any, error?: string }`
-- 数据库操作通过 Prisma Client
+## 工作方式
 
-## 注意事项
-
-- `prisma/dev.db`（SQLite）与 `.env` 不入库
-- 新功能先建 Git 分支再开发
-- 项目级权限配置约定见 `.agents/settings.json`（如需要可创建）：允许 Read/Write、`npm *`、`git *`、`node *`，拒绝 `rm -rf *`
-- 全局沟通与 Git 规则见 `~/.Codex/AGENTS.md`
-
-## 开发流程与技能
-
-- 任务匹配 `.agents/skills/` 中的技能时，先读取并遵循对应的 `SKILL.md`。
-- 创建或修改功能前先用 `brainstorming`；实现前采用 TDD；宣称完成前进行验证。
-- 需要并行协作、调试、代码审查、Git 工作流或计划执行时，按任务匹配使用对应技能。
+- 个人协作偏好、Git 和依赖安装规则由 `C:\\Users\\q1209\\.codex\\AGENTS.md` 统一定义；本文件仅补充本仓库规则。
+- 新功能开发需要隔离时，先说明建议的 `codex/` 分支名和原因，获得用户同意后再创建。
+- 任务命中仓库内 `.agents/skills/` 的技能时，先读取并遵循其 `SKILL.md`。
+- 修改行为或修复问题前，先进行必要的需求澄清和设计；实现时采用测试优先；报告完成前提供实际验证结果。
